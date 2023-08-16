@@ -21,6 +21,8 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
 
     class ItemEnum(CoreEnum):
         SPECIAL_COCKTAIL = EnumMember('SPECIAL_COCKTAIL', 'Special Cocktail')
+        MAGIC_COCKTAIL = EnumMember('MAGIC_COCKTAIL', 'Magic Cocktail')
+        HAMBUCA = EnumMember('HAMBUCA', 'Hambuca')
 
     class CountEnum(CoreEnum):
         ONE = EnumMember(1, '1')
