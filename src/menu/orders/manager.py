@@ -19,3 +19,10 @@ class OrdersManager(Manager):
     """
 
     package_class = OrdersPackage
+
+    def get_welcome_message(self, **options):
+        """
+        gets a welcome message.
+        """
+
+        return 'Welcome to the Birthday Party!'
