@@ -13,3 +13,4 @@ class OrdersPackage(Package):
 
     NAME = __name__
     COMPONENT_NAME = 'orders.component'
+    CONFIG_STORE_NAMES = ['orders']

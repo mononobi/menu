@@ -3,7 +3,7 @@
 orders exceptions module.
 """
 
-from pyrin.core.exceptions import CoreException, CoreBusinessException
+from pyrin.core.exceptions import CoreException, CoreBusinessException, CoreNotFoundError
 
 
 class OrdersException(CoreException):
@@ -16,5 +16,12 @@ class OrdersException(CoreException):
 class OrdersBusinessException(CoreBusinessException, OrdersException):
     """
     orders business exception.
+    """
+    pass
+
+
+class OrderNotFoundError(CoreNotFoundError, OrdersBusinessException):
+    """
+    order not found error.
     """
     pass

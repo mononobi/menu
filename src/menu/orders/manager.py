@@ -3,14 +3,15 @@
 orders manager module.
 """
 
-import pyrin.validator.services as validator_services
-import pyrin.filtering.services as filtering_services
+import pyrin.configuration.services as config_services
 
-from pyrin.core.globals import _
 from pyrin.core.structs import Manager
-from pyrin.database.services import get_current_store
+
+import menu.telegram.services as telegram_services
 
 from menu.orders import OrdersPackage
+from menu.orders.exceptions import OrderNotFoundError
+from menu.orders.models import OrderEntity
 
 
 class OrdersManager(Manager):
@@ -20,9 +21,101 @@ class OrdersManager(Manager):
 
     package_class = OrdersPackage
 
+    def _get_notification_message(self, title, order_id):
+        """
+        gets the notification message for the given order.
+
+        :param str title: title to be used in the message.
+        :param int order_id: order id to fill the notification message from its values.
+
+        :rtype: str
+        """
+
+        entity = self.get(order_id)
+        open_count = self.get_count(OrderEntity.StateEnum.OPEN)
+        total_count = self.get_count()
+        client_url = config_services.get_active('orders', 'client_url')
+        message = (f'{title}\n\n'
+                   f'Name: {entity.name}\n'
+                   f'Item: {OrderEntity.ItemEnum(entity.item)}\n'
+                   f'Count: {entity.count}\n'
+                   f'State: {OrderEntity.StateEnum(entity.state)}\n'
+                   f'Comment: {entity.comment or "-"}\n\n'
+                   f'Open orders: {open_count}\n'
+                   f'Total orders: {total_count}\n\n'
+                   f'View order:\n{client_url}/orders/{entity.id}\n\n'
+                   f'View open orders:\n{client_url}/orders?state=OPEN\n\n'
+                   f'View all orders:\n{client_url}/orders')
+
+        return message
+
     def get_welcome_message(self, **options):
         """
         gets a welcome message.
         """
 
         return 'Welcome to the Birthday Party!'
+
+    def notify_order_created(self, order_id):
+        """
+        notifies that an order has been created.
+
+        :param int order_id: created order id.
+        """
+
+        mono_chat_id = config_services.get_active('telegram', 'mono_chat_id')
+        mohi_chat_id = config_services.get_active('telegram', 'mohi_chat_id')
+        message = self._get_notification_message('A NEW ORDER HAS BEEN ADDED.', order_id)
+
+        telegram_services.send_message(mohi_chat_id, message)
+        telegram_services.send_message(mono_chat_id, message)
+
+    def notify_order_updated(self, order_id):
+        """
+        notifies that an order has been updated.
+
+        :param int order_id: updated order id.
+        """
+
+        mono_chat_id = config_services.get_active('telegram', 'mono_chat_id')
+        mohi_chat_id = config_services.get_active('telegram', 'mohi_chat_id')
+        message = self._get_notification_message(f'ORDER [{order_id}] HAS BEEN EDITED.',
+                                                 order_id)
+
+        telegram_services.send_message(mohi_chat_id, message)
+        telegram_services.send_message(mono_chat_id, message)
+
+    def get_count(self, state=None):
+        """
+        gets the order count in the given state.
+
+        :param str state: order state.
+                          if set to None, total order count would be returned.
+        :enum state:
+            OPEN = 'OPEN'
+            DONE = 'DONE'
+            CANCELED = 'CANCELED'
+
+        :rtype: int
+        """
+
+        query = OrderEntity.query(OrderEntity.id)
+        if state is not None:
+            query = query.where(OrderEntity.state == state)
+
+        return query.count()
+
+    def get(self, order_id):
+        """
+        gets the order with the given id.
+
+        :param int order_id: order id to get.
+
+        :rtype: OrderEntity
+        """
+
+        entity = OrderEntity.query().get(order_id)
+        if not entity:
+            raise OrderNotFoundError(f'Order [{order_id}] not found.')
+
+        return entity

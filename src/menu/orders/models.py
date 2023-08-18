@@ -3,16 +3,10 @@
 orders models module.
 """
 
-from sqlalchemy import Unicode, Integer
-
 from pyrin.core.enumerations import CoreEnum, EnumMember
 from pyrin.database.model.declarative import CoreEntity
 from pyrin.database.model.mixin import CreateHistoryMixin
-from pyrin.database.orm.sql.schema.base import CoreColumn
-from pyrin.database.orm.sql.schema.columns import AutoPKColumn, GUIDPKColumn, \
-    SequencePKColumn, FKColumn, IntegerColumn, SmallIntegerColumn, DateColumn, \
-    TimeStampColumn, DateTimeColumn, BooleanColumn, HiddenColumn, StringColumn, \
-    TextColumn, BigIntegerColumn
+from pyrin.database.orm.sql.schema.columns import SequencePKColumn, IntegerColumn, StringColumn
 
 
 class OrderEntity(CoreEntity, CreateHistoryMixin):
@@ -20,9 +14,7 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
     _table = 'order'
 
     class ItemEnum(CoreEnum):
-        SPECIAL_COCKTAIL = EnumMember('SPECIAL_COCKTAIL', 'Special Cocktail')
-        MAGIC_COCKTAIL = EnumMember('MAGIC_COCKTAIL', 'Magic Cocktail')
-        HAMBUCA = EnumMember('HAMBUCA', 'Hambuca')
+        COCKTAIL = EnumMember('COCKTAIL', 'Cocktail')
 
     class CountEnum(CoreEnum):
         ONE = EnumMember(1, '1')
@@ -35,10 +27,10 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
         DONE = EnumMember('DONE', 'Done')
         CANCELED = EnumMember('CANCELED', 'Canceled')
 
-    id = AutoPKColumn(name='id')
+    id = SequencePKColumn(name='id', sequence='order_id_seq')
     name = StringColumn(name='name', nullable=False, max_length=64)
     item = StringColumn(name='item', nullable=False, max_length=64,
-                        check_in=ItemEnum, default=ItemEnum.SPECIAL_COCKTAIL)
+                        check_in=ItemEnum, default=ItemEnum.COCKTAIL)
     count = IntegerColumn(name='count', nullable=False,
                           check_in=CountEnum, default=CountEnum.ONE)
     state = StringColumn(name='state', nullable=False, max_length=64,

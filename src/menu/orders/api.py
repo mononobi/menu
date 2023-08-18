@@ -3,7 +3,7 @@
 orders api module.
 """
 
-from pyrin.api.router.decorators import api, post, put, patch, delete
+from pyrin.api.router.decorators import api
 
 import menu.orders.services as orders_services
 
