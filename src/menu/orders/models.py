@@ -34,5 +34,6 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
     count = IntegerColumn(name='count', nullable=False,
                           check_in=CountEnum, default=CountEnum.ONE)
     state = StringColumn(name='state', nullable=False, max_length=64,
-                         check_in=StateEnum, default=StateEnum.OPEN)
+                         check_in=StateEnum, default=StateEnum.OPEN,
+                         allow_write=False)
     comment = StringColumn(name='comment', max_length=100)

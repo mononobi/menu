@@ -25,3 +25,10 @@ class OrderNotFoundError(CoreNotFoundError, OrdersBusinessException):
     order not found error.
     """
     pass
+
+
+class OrderStateCannotBeChangedError(OrdersBusinessException):
+    """
+    order state cannot be changed error.
+    """
+    pass

@@ -34,3 +34,23 @@ def notify_order_updated(order_id):
     """
 
     return get_component(OrdersPackage.COMPONENT_NAME).notify_order_updated(order_id)
+
+
+def mark_done(order_id):
+    """
+    marks the given order as done.
+
+    :param int order_id: order id to be marked as done.
+    """
+
+    return get_component(OrdersPackage.COMPONENT_NAME).mark_done(order_id)
+
+
+def mark_canceled(order_id):
+    """
+    marks the given order as canceled.
+
+    :param int order_id: order id to be marked as canceled.
+    """
+
+    return get_component(OrdersPackage.COMPONENT_NAME).mark_canceled(order_id)

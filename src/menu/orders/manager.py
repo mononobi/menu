@@ -4,13 +4,14 @@ orders manager module.
 """
 
 import pyrin.configuration.services as config_services
+import pyrin.validator.services as validator_services
 
 from pyrin.core.structs import Manager
 
 import menu.telegram.services as telegram_services
 
 from menu.orders import OrdersPackage
-from menu.orders.exceptions import OrderNotFoundError
+from menu.orders.exceptions import OrderNotFoundError, OrderStateCannotBeChangedError
 from menu.orders.models import OrderEntity
 
 
@@ -119,3 +120,43 @@ class OrdersManager(Manager):
             raise OrderNotFoundError(f'Order [{order_id}] not found.')
 
         return entity
+
+    def _change_state(self, order_id, state):
+        """
+        changes the state of the given order.
+
+        :param int order_id: order id to change its state.
+        :param str state: new state to be set for the order.
+        :enum state:
+            OPEN = 'OPEN'
+            DONE = 'DONE'
+            CANCELED = 'CANCELED'
+        """
+
+        entity = self.get(order_id)
+        if entity.state != OrderEntity.StateEnum.OPEN:
+            raise OrderStateCannotBeChangedError(f'Order [{order_id}] is in '
+                                                 f'[{OrderEntity.StateEnum(entity.state)}] '
+                                                 f'state and its state cannot be modified.')
+
+        validator_services.validate(OrderEntity, lazy=False, state=state)
+        entity.state = state
+        entity.save()
+
+    def mark_done(self, order_id):
+        """
+        marks the given order as done.
+
+        :param int order_id: order id to be marked as done.
+        """
+
+        self._change_state(order_id, OrderEntity.StateEnum.DONE)
+
+    def mark_canceled(self, order_id):
+        """
+        marks the given order as canceled.
+
+        :param int order_id: order id to be marked as canceled.
+        """
+
+        self._change_state(order_id, OrderEntity.StateEnum.CANCELED)
