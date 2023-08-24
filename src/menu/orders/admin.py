@@ -69,13 +69,16 @@ class OrderAdmin(AdminPage):
         """
 
         if row.state == OrderEntity.StateEnum.OPEN:
-            return self._get_action_info('Mark Done',
+            return self._get_action_info('Done',
                                          'menu.orders.api.mark_done',
                                          HTTPMethodEnum.PATCH,
                                          success_message=
                                          f'Order [{row.id}] marked as ['
                                          f'{OrderEntity.StateEnum(OrderEntity.StateEnum.DONE)}'
                                          f'] successfully.',
+                                         confirmation_message=
+                                         f'Mark order [{row.id}] as '
+                                         f'{OrderEntity.StateEnum(OrderEntity.StateEnum.DONE)}?',
                                          url_params=dict(order_id=row.id))
 
         return None
@@ -91,13 +94,17 @@ class OrderAdmin(AdminPage):
         """
 
         if row.state == OrderEntity.StateEnum.OPEN:
-            return self._get_action_info('Mark Canceled',
+            return self._get_action_info('Cancel',
                                          'menu.orders.api.mark_canceled',
                                          HTTPMethodEnum.PATCH,
                                          success_message=
                                          f'Order [{row.id}] marked as ['
                                          f'{OrderEntity.StateEnum(OrderEntity.StateEnum.CANCELED)}'
                                          f'] successfully.',
+                                         confirmation_message=
+                                         f'Mark order [{row.id}] as '
+                                         f'{OrderEntity.StateEnum(OrderEntity.StateEnum.CANCELED)}'
+                                         f'?',
                                          url_params=dict(order_id=row.id))
 
         return None
