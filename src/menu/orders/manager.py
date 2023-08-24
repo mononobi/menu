@@ -45,6 +45,7 @@ class OrdersManager(Manager):
                    f'Open orders: {open_count}\n'
                    f'Total orders: {total_count}\n\n'
                    f'View order:\n{client_url}/orders/{entity.id}\n\n'
+                   f'View order on list:\n{client_url}/orders?id={entity.id}\n\n'
                    f'View open orders:\n{client_url}/orders?state=OPEN\n\n'
                    f'View all orders:\n{client_url}/orders')
 
@@ -142,6 +143,15 @@ class OrdersManager(Manager):
         validator_services.validate(OrderEntity, lazy=False, state=state)
         entity.state = state
         entity.save()
+
+        mono_chat_id = config_services.get_active('telegram', 'mono_chat_id')
+        mohi_chat_id = config_services.get_active('telegram', 'mohi_chat_id')
+        message = self._get_notification_message(f'ORDER [{order_id}] STATE '
+                                                 f'HAS BEEN CHANGED TO [{state}].',
+                                                 order_id)
+
+        telegram_services.send_message(mohi_chat_id, message)
+        telegram_services.send_message(mono_chat_id, message)
 
     def mark_done(self, order_id):
         """
