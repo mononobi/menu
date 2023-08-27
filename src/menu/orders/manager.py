@@ -44,8 +44,8 @@ class OrdersManager(Manager):
                    f'Comment: {entity.comment or "-"}\n\n'
                    f'Open orders: {open_count}\n'
                    f'Total orders: {total_count}\n\n'
+                   f'Change order state:\n{client_url}/orders?id={entity.id}\n\n'
                    f'View order:\n{client_url}/orders/{entity.id}\n\n'
-                   f'View order on list:\n{client_url}/orders?id={entity.id}\n\n'
                    f'View open orders:\n{client_url}/orders?state=OPEN\n\n'
                    f'View all orders:\n{client_url}/orders')
 
