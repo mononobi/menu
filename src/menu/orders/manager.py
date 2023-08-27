@@ -33,6 +33,10 @@ class OrdersManager(Manager):
         """
 
         entity = self.get(order_id)
+        on_list_message = 'View order on list:'
+        if entity.state == OrderEntity.StateEnum.OPEN:
+            on_list_message = 'Change order state:'
+
         open_count = self.get_count(OrderEntity.StateEnum.OPEN)
         total_count = self.get_count()
         client_url = config_services.get_active('orders', 'client_url')
@@ -44,7 +48,7 @@ class OrdersManager(Manager):
                    f'Comment: {entity.comment or "-"}\n\n'
                    f'Open orders: {open_count}\n'
                    f'Total orders: {total_count}\n\n'
-                   f'Change order state:\n{client_url}/orders?id={entity.id}\n\n'
+                   f'{on_list_message}\n{client_url}/orders?id={entity.id}\n\n'
                    f'View order:\n{client_url}/orders/{entity.id}\n\n'
                    f'View open orders:\n{client_url}/orders?state=OPEN\n\n'
                    f'View all orders:\n{client_url}/orders')
