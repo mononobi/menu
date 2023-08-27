@@ -14,7 +14,7 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
     _table = 'order'
 
     class ItemEnum(CoreEnum):
-        COCKTAIL = EnumMember('COCKTAIL', 'Cocktail')
+        APEROL = EnumMember('APEROL', 'Aperol')
 
     class CountEnum(CoreEnum):
         ONE = EnumMember(1, '1')
@@ -30,7 +30,7 @@ class OrderEntity(CoreEntity, CreateHistoryMixin):
     id = SequencePKColumn(name='id', sequence='order_id_seq')
     name = StringColumn(name='name', nullable=False, max_length=64)
     item = StringColumn(name='item', nullable=False, max_length=64,
-                        check_in=ItemEnum, default=ItemEnum.COCKTAIL)
+                        check_in=ItemEnum, default=ItemEnum.APEROL)
     count = IntegerColumn(name='count', nullable=False,
                           check_in=CountEnum, default=CountEnum.ONE)
     state = StringColumn(name='state', nullable=False, max_length=64,
